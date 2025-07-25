@@ -42,6 +42,7 @@ def trainRoute():
 @cross_origin()
 def predictRoute():
     image = request.json['image']
+    
     decodeImage(image, clApp.filename)
     result = clApp.classifier.predict()
     return jsonify(result)
