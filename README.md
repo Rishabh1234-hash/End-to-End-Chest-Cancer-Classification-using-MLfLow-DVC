@@ -115,13 +115,13 @@ export MLFLOW_TRACKING_PASSWORD=<your-token>
 
 4. **Set GitHub Secrets for CI/CD**
 
-| Key                     | Value                                          |
-| ----------------------- | ---------------------------------------------- |
-| `AWS_ACCESS_KEY_ID`     | *Your IAM access key*                          |
-| `AWS_SECRET_ACCESS_KEY` | *Your IAM secret key*                          |
-| `AWS_REGION`            | `us-east-1`                                    |
-| `AWS_ECR_LOGIN_URI`     | `566373416292.dkr.ecr.us-east-1.amazonaws.com` |
-| `ECR_REPOSITORY_NAME`   | `chicken` or your model repo name              |
+| Key                     | Value                                                 |
+| ----------------------- | ----------------------------------------------        |
+| `AWS_ACCESS_KEY_ID`     | *Your IAM access key*                                 |
+| `AWS_SECRET_ACCESS_KEY` | *Your IAM secret key*                                 |
+| `AWS_REGION`            | `us-east-1`                                           |
+| `AWS_ECR_LOGIN_URI`     | `602206539389.dkr.ecr.ap-south-1.amazonaws.com/chest` |
+| `ECR_REPOSITORY_NAME`   | `chicken` or your model repo name                      |
 
 ---
 
