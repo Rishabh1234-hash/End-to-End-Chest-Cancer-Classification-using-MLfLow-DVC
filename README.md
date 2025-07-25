@@ -1,108 +1,149 @@
-# End-to-End-Chest-Cancer-Classification-using-MLfLow-DVC
+Here’s a **cleaned-up and properly formatted** version of your `README.md` to make it readable, professional, and informative:
 
-Workflows
-Update config.yaml
-Update secrets.yaml [Optional]
-Update params.yaml
-Update the entity
-Update the configuration manager in src config
-Update the components
-Update the pipeline
-Update the main.py
-Update the dvc.yaml
-MLflow
-Documentation
+---
 
-MLflow tutorial
+# 🩻 End-to-End Chest Cancer Classification using MLflow & DVC
 
-cmd
+This project demonstrates an end-to-end workflow for image classification (Chest Cancer Detection) using CNNs, orchestrated with **DVC** for pipeline management and **MLflow** for experiment tracking. It includes configuration management, data versioning, experiment tracking, and deployment via Docker & AWS.
+
+---
+
+## 📌 Project Structure Overview
+
+### ✅ Workflow Steps:
+
+1. **Update `config.yaml`**
+2. **Update `secrets.yaml`** *(Optional)*
+3. **Update `params.yaml`**
+4. **Define Configuration Entities** (`config_entity.py`)
+5. **Update Configuration Manager** (`configuration.py`)
+6. **Implement Components** (data ingestion, model training, etc.)
+7. **Create Pipelines** (`pipeline/`)
+8. **Run the Project with `main.py`**
+9. **Define Pipelines in `dvc.yaml`**
+10. **Track Experiments using MLflow**
+11. **Document Everything**
+
+---
+
+## 🔁 Workflow Commands
+
+### DVC Commands:
+
+```bash
+dvc init           # Initialize DVC repo
+dvc repro          # Run the entire pipeline
+dvc dag            # Visualize pipeline as a DAG
+```
+
+### MLflow UI:
+
+```bash
 mlflow ui
-dagshub
-dagshub
+```
 
-MLFLOW_TRACKING_URI=https://dagshub.com/shubhanagrawal/End-to-End-Chest-Cancer-Classification-using-MLfLow-DVC.mlflow
+---
 
-MLFLOW_TRACKING_USERNAME=shubhanagrawal
-MLFLOW_TRACKING_PASSWORD=fabfa866dd1e0c627bed32f7f075a46397e47e71
-python script.py
+## 📊 MLflow Tracking (via DagsHub)
 
-Run this to export as env variables:
+To enable MLflow tracking on DagsHub, set these environment variables:
 
-export MLFLOW_TRACKING_URI=https://dagshub.com/entbappy/chest-Disease-Classification-MLflow-DVC.mlflow
+```bash
+export MLFLOW_TRACKING_URI=https://dagshub.com/shubhanagrawal/End-to-End-Chest-Cancer-Classification-using-MLfLow-DVC.mlflow
+export MLFLOW_TRACKING_USERNAME=shubhanagrawal
+export MLFLOW_TRACKING_PASSWORD=<your-token>
+```
 
-export MLFLOW_TRACKING_USERNAME=entbappy 
+> 🔐 Replace `<your-token>` with your actual MLflow token (keep it private in `.env` or GitHub secrets).
 
-export MLFLOW_TRACKING_PASSWORD=6824692c47a369aa6f9353c5b10041d5c8edbcef0
-DVC cmd
-dvc init
-dvc repro
-dvc dag
-About MLflow & DVC
-MLflow
+---
 
-Its Production Grade
-Trace all of your expriements
-Logging & taging your model
-DVC
+## 🔍 About MLflow & DVC
 
-Its very lite weight for POC only
-lite weight expriements tracker
-It can perform Orchestration (Creating Pipelines)
-AWS-CICD-Deployment-with-Github-Actions
-1. Login to AWS console.
-2. Create IAM user for deployment
-#with specific access
+### MLflow:
 
-1. EC2 access : It is virtual machine
+* Production-grade experiment tracker.
+* Logs metrics, parameters, models.
+* Tags and versions your models.
 
-2. ECR: Elastic Container registry to save your docker image in aws
+### DVC:
 
+* Lightweight experiment tracking and pipeline orchestration tool.
+* Enables reproducible machine learning pipelines.
+* Integrates with Git for data and model versioning.
 
-#Description: About the deployment
+---
 
-1. Build docker image of the source code
+## 🚀 AWS CI/CD Deployment with GitHub Actions
 
-2. Push your docker image to ECR
+### Prerequisites:
 
-3. Launch Your EC2 
+* Create an **IAM user** with access to:
 
-4. Pull Your image from ECR in EC2
+  * **EC2** (virtual machine)
+  * **ECR** (Elastic Container Registry)
 
-5. Lauch your docker image in EC2
+#### Required IAM Policies:
 
-#Policy:
+* `AmazonEC2FullAccess`
+* `AmazonEC2ContainerRegistryFullAccess`
 
-1. AmazonEC2ContainerRegistryFullAccess
+---
 
-2. AmazonEC2FullAccess
-3. Create ECR repo to store/save docker image
-- Save the URI: 566373416292.dkr.ecr.us-east-1.amazonaws.com/chicken
-4. Create EC2 machine (Ubuntu)
-5. Open EC2 and Install docker in EC2 Machine:
-#optinal
+### Deployment Steps:
 
-sudo apt-get update -y
+1. **Create ECR Repo**
+   Save the URI:
+   `566373416292.dkr.ecr.us-east-1.amazonaws.com/chicken`
 
-sudo apt-get upgrade
+2. **Create EC2 Ubuntu Machine**
+   Install Docker on EC2:
 
-#required
+   ```bash
+   sudo apt-get update -y
+   sudo apt-get upgrade
+   curl -fsSL https://get.docker.com -o get-docker.sh
+   sudo sh get-docker.sh
+   sudo usermod -aG docker ubuntu
+   newgrp docker
+   ```
 
-curl -fsSL https://get.docker.com -o get-docker.sh
+3. **Configure EC2 as a Self-hosted GitHub Actions Runner**
 
-sudo sh get-docker.sh
+   * Go to: `GitHub Repo → Settings → Actions → Runners → Add new self-hosted runner`
+   * Select OS and follow the setup instructions.
 
-sudo usermod -aG docker ubuntu
+4. **Set GitHub Secrets for CI/CD**
 
-newgrp docker
-6. Configure EC2 as self-hosted runner:
-setting>actions>runner>new self hosted runner> choose os> then run command one by one
-7. Setup github secrets:
-AWS_ACCESS_KEY_ID=
+| Key                     | Value                                          |
+| ----------------------- | ---------------------------------------------- |
+| `AWS_ACCESS_KEY_ID`     | *Your IAM access key*                          |
+| `AWS_SECRET_ACCESS_KEY` | *Your IAM secret key*                          |
+| `AWS_REGION`            | `us-east-1`                                    |
+| `AWS_ECR_LOGIN_URI`     | `566373416292.dkr.ecr.us-east-1.amazonaws.com` |
+| `ECR_REPOSITORY_NAME`   | `chicken` or your model repo name              |
 
-AWS_SECRET_ACCESS_KEY=
+---
 
-AWS_REGION = us-east-1
+## 🛠 Technologies Used
 
-AWS_ECR_LOGIN_URI = demo>>  566373416292.dkr.ecr.ap-south-1.amazonaws.com
+* Python
+* Convolutional Neural Networks (CNN)
+* MLflow
+* DVC
+* GitHub Actions
+* Docker
+* AWS EC2 & ECR
+* DagsHub
 
-ECR_REPOSITORY_NAME = simple-app
+---
+
+## 👨‍💻 Author
+
+**Shubhan Agrawal**
+📍 [GitHub](https://github.com/shubhanagrawal)
+📧 Email: *add if desired*
+
+---
+
+Let me know if you'd like to add badges, images, or split the deployment section into a separate file.
