@@ -6,17 +6,26 @@ import time
 from cnnClassifier.entity.config_entity import TrainingConfig
 from pathlib import Path
 
-
-
 class Training:
     def __init__(self, config: TrainingConfig):
         self.config = config
 
-    
     def get_base_model(self):
+        # --- MODIFICATION START ---
+
+        # 1. Load the model WITHOUT its old training configuration to avoid the 'reduction' error.
         self.model = tf.keras.models.load_model(
-            self.config.updated_base_model_path
+            self.config.updated_base_model_path,
+            compile=False # <-- This is the key to loading an old model
         )
+
+        # 2. Re-compile the model with a valid configuration for your new version of TensorFlow.
+        self.model.compile(
+            optimizer='adam',
+            loss='categorical_crossentropy',
+            metrics=['accuracy']
+        )
+        # --- MODIFICATION END ---
 
     def train_valid_generator(self):
 
@@ -66,8 +75,6 @@ class Training:
     @staticmethod
     def save_model(path: Path, model: tf.keras.Model):
         model.save(path)
-
-
 
     
     def train(self):

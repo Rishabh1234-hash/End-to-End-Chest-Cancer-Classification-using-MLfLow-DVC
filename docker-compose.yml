@@ -1,0 +1,44 @@
+version: '3.9'
+
+services:
+  auth-service:
+    build:
+      context: .
+      dockerfile: ./ml_microservices/auth/Dockerfile
+    container_name: auth_service
+    ports:
+      - "5000:5000"
+    restart: always
+
+  upload-service:
+    build:
+      context: .
+      dockerfile: ./ml_microservices/upload/Dockerfile
+    container_name: upload_service
+    ports:
+      - "5001:5001"
+    depends_on:
+      - auth-service
+    restart: always
+
+  predict-service:
+    build:
+      context: .
+      dockerfile: ./ml_microservices/predict/Dockerfile
+    container_name: predict_service
+    ports:
+      - "5002:5002"
+    depends_on:
+      - upload-service
+    restart: always
+
+  train-service:
+    build:
+      context: .
+      dockerfile: ./ml_microservices/train/Dockerfile
+    container_name: train_service
+    ports:
+      - "5003:5003"
+    depends_on:
+      - predict-service
+    restart: always
