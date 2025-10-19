@@ -1,8 +1,15 @@
 AUGMENTATION: True
-IMAGE_SIZE: [224, 224, 3] # as per VGG 16 model
-BATCH_SIZE: 16
-INCLUDE_TOP: False
-EPOCHS: 2
-CLASSES: 2
-WEIGHTS: imagenet
-LEARNING_RATE: 0.01
+IMAGE_SIZE: [224, 224, 3]   # Standard for VGG16 input
+BATCH_SIZE: 32              # Larger batch for stability (if GPU supports)
+INCLUDE_TOP: False          # Use transfer learning, exclude final FC layers
+EPOCHS: 30                  # Enough to converge (use EarlyStopping)
+CLASSES: 2                  # Binary classification (Cancer vs. No Cancer)
+WEIGHTS: imagenet           # Transfer learning starting point
+LEARNING_RATE: 0.0001       # Lower LR for fine-tuning
+OPTIMIZER: Adam             # Works well with medical data
+LOSS: binary_crossentropy   # For binary classification
+METRICS: [accuracy, AUC, recall, precision, F1Score]  # Beyond accuracy
+CALLBACKS:
+  - EarlyStopping: { patience: 5, monitor: val_loss }
+  - ReduceLROnPlateau: { factor: 0.5, patience: 3 }
+  - ModelCheckpoint: { save_best_only: True }
