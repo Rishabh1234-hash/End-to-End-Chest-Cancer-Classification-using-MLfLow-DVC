@@ -2,14 +2,13 @@ import os
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-import uvicorn
+from pathlib import Path
+
 from cnnClassifier.entity.config_entity import TrainingConfig
 from cnnClassifier.components.model_trainer import Training
-from pathlib import Path
 
 app = FastAPI()
 
-# Allow CORS if your frontend and backend are on different origins
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -20,28 +19,17 @@ app.add_middleware(
 @app.post("/train")
 async def train_model(request: Request):
     try:
-        # Assume project root is 3 levels above this file
-        project_root = Path(__file__).resolve().parent.parent.parent
-        
-        # --- MODIFICATION START ---
+        # Use in-container paths
+        model_dir = Path("model")
+        training_data_path = Path("data/train")
 
-        # Define the directory path for the models
-        model_dir = project_root / "model" # <-- ADDED LINE
-        
-        # Ensure the directory to save the model exists
-        os.makedirs(model_dir, exist_ok=True) # <-- ADDED LINE
+        os.makedirs(model_dir, exist_ok=True)
 
-        # Compose absolute paths using the defined model directory
         updated_base_model_path = model_dir / "model.h5"
         trained_model_path = model_dir / "trained_model.h5"
-        
-        # --- MODIFICATION END ---
-        
-        training_data_path = project_root / "data" / "train"
 
-        # Create TrainingConfig with absolute paths
         config = TrainingConfig(
-            root_dir=project_root,
+            root_dir=Path("."),
             trained_model_path=trained_model_path,
             updated_base_model_path=updated_base_model_path,
             training_data=training_data_path,
@@ -58,7 +46,6 @@ async def train_model(request: Request):
 
         return JSONResponse(content={"message": "Training completed successfully"})
     except Exception as e:
-        # It's helpful to log the full error to the console for debugging
         import traceback
         traceback.print_exc()
         return JSONResponse(content={"detail": f"Training failed: {str(e)}"}, status_code=500)
