@@ -7,7 +7,7 @@ services:
       dockerfile: ./ml_microservices/auth/Dockerfile
     container_name: auth_service
     ports:
-      - "5000:5000"
+      - "3001:3001"
     restart: always
 
   upload-service:
@@ -16,7 +16,9 @@ services:
       dockerfile: ./ml_microservices/upload/Dockerfile
     container_name: upload_service
     ports:
-      - "5001:5001"
+      - "3002:3002"
+    volumes:
+      - ./ml_microservices/upload/uploads:/app/uploads
     depends_on:
       - auth-service
     restart: always
@@ -27,7 +29,10 @@ services:
       dockerfile: ./ml_microservices/predict/Dockerfile
     container_name: predict_service
     ports:
-      - "5002:5002"
+      - "3003:3003"
+    volumes:
+      - ./model:/app/model
+      - ./ml_microservices/upload/uploads:/app/uploads
     depends_on:
       - upload-service
     restart: always
@@ -38,7 +43,24 @@ services:
       dockerfile: ./ml_microservices/train/Dockerfile
     container_name: train_service
     ports:
-      - "5003:5003"
+      - "3004:3004"
+    volumes:
+      - ./model:/app/model
+      - ./data/train:/app/data/train
     depends_on:
       - predict-service
+    restart: always
+
+  frontend:
+    image: nginx:alpine
+    container_name: frontend
+    ports:
+      - "8080:80"   # Change to 80:80 if Jenkins is not using 80
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+    depends_on:
+      - auth-service
+      - upload-service
+      - predict-service
+      - train-service
     restart: always
