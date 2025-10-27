@@ -55,7 +55,7 @@ services:
     image: nginx:alpine
     container_name: frontend
     ports:
-      - "8080:80"   # Change to 80:80 if Jenkins is not using 80
+      - "8080:81"   # Change to 80:80 if Jenkins is not using 80
     volumes:
       - ./frontend:/usr/share/nginx/html:ro
     depends_on:
