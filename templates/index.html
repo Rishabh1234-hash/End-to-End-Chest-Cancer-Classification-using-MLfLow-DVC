@@ -9,12 +9,6 @@
       background-color: #eff2f9;
     }
 
-    .iupload h3 {
-      color: #1b2d6b;
-      font-size: 30px;
-      font-weight: 700;
-    }
-
     .image-part {
       height: 300px;
       width: 300px;
@@ -44,7 +38,7 @@
     </div>
 
     <div class="row">
-      <!-- Image Upload and Predict Buttons -->
+      <!-- Upload & Predict -->
       <div class="col-md-6 text-center">
         <div class="image-part mb-3">
           <img id="photo" src="" style="max-width:100%; max-height:100%; display:none;">
@@ -54,7 +48,7 @@
         <button id="send" class="btn btn-success" disabled>Predict</button>
       </div>
 
-      <!-- Prediction Result -->
+      <!-- Result -->
       <div class="col-md-6">
         <h5>Prediction Result</h5>
         <div class="res-part">
@@ -64,9 +58,13 @@
     </div>
   </div>
 
-  <!-- Scripts -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script>
+    const AUTH_URL = "http://localhost:3001";
+    const UPLOAD_URL = "http://localhost:3002";
+    const PREDICT_URL = "http://localhost:3003";
+    const TRAIN_URL = "http://localhost:3004";
+
     let uploadedFilename = "";
 
     // ------------------ LOGIN ------------------
@@ -75,7 +73,7 @@
       formData.append("username", $("#username").val());
       formData.append("password", $("#password").val());
 
-      const res = await fetch("http://127.0.0.1:5000/login", {
+      const res = await fetch(`${AUTH_URL}/login`, {
         method: "POST",
         body: formData,
       });
@@ -87,8 +85,6 @@
         $("#send").prop("disabled", false);
       } else {
         $("#loginStatus").text("Login failed").css("color", "red");
-        $("#uload").prop("disabled", true);
-        $("#send").prop("disabled", true);
       }
     }
 
@@ -100,8 +96,7 @@
       const formData = new FormData();
       formData.append("file", file);
 
-      // Step 1: Upload file
-      const res = await fetch("http://127.0.0.1:5001/upload", {
+      const res = await fetch(`${UPLOAD_URL}/upload`, {
         method: "POST",
         body: formData,
       });
@@ -110,25 +105,15 @@
       uploadedFilename = data.filename;
       $("#photo").attr("src", URL.createObjectURL(file)).show();
 
-      // Step 2: Trigger model training
-      const trainPayload = {
-        data_dir: "../upload/uploads" // Adjust this if your backend expects a different path
-      };
-
       try {
-        const trainRes = await fetch("http://127.0.0.1:5003/train", {
+        const trainRes = await fetch(`${TRAIN_URL}/train`, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(trainPayload),
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({ data_dir: "../upload/uploads" }),
         });
-
         const trainData = await trainRes.json();
-        console.log("Training response:", trainData);
         alert("✅ Training started: " + trainData.message);
       } catch (err) {
-        console.error("Training error:", err);
         alert("⚠️ Error during training.");
       }
     });
@@ -140,7 +125,7 @@
         return;
       }
 
-      const res = await fetch(`http://127.0.0.1:5002/predict?filename=${uploadedFilename}`);
+      const res = await fetch(`${PREDICT_URL}/predict?filename=${uploadedFilename}`);
       const data = await res.json();
       $("#result").text(JSON.stringify(data, null, 2));
     });
